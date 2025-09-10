@@ -1,0 +1,48 @@
+#!/bin/bash
+#export LD_LIBRARY_PATH=/usr/lib/oracle/12.1/client64/lib
+
+. "./creds"
+
+echo "Here are the jobs on the job board."
+sqlplus64 "${USERNAME}/${PASSWORD}@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=oracle.scs.ryerson.ca)(Port=1521))(CONNECT_DATA=(SID=orcl)))" << EOF
+SET PAGESIZE 50000
+SET LINESIZE 200
+SET WRAP OFF
+SET TRIMSPOOL ON
+SET FEEDBACK OFF
+SET HEADING ON
+SET COLSEP '   '
+
+COLUMN USERNAME FORMAT A20
+COLUMN FULLNAME FORMAT A30
+COLUMN ADDRESS FORMAT A40
+COLUMN EDUCATION FORMAT A40
+COLUMN PENDINGINTERVIEWS FORMAT A20
+SELECT * FROM JobListing;
+SET WRAP OFF
+EXIT;
+EOF
+echo -ne "\n\n\n\n\n\n"
+echo "What is the name (or prefix) of the job you are trying to search for?"
+echo -ne "Response: "
+read name 
+
+sqlplus64 "${USERNAME}/${PASSWORD}@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=oracle.scs.ryerson.ca)(Port=1521))(CONNECT_DATA=(SID=orcl)))" << EOF
+SET PAGESIZE 50000         
+SET LINESIZE 200           
+SET WRAP OFF              
+SET TRIMSPOOL ON           
+SET FEEDBACK OFF          
+SET HEADING ON             
+SET COLSEP '   '           
+
+COLUMN USERNAME FORMAT A20
+COLUMN FULLNAME FORMAT A30
+COLUMN ADDRESS FORMAT A40
+COLUMN EDUCATION FORMAT A40
+COLUMN PENDINGINTERVIEWS FORMAT A20
+SELECT * FROM JobListing WHERE JobTitle LIKE '$name%';
+SET WRAP OFF 
+EXIT;
+EOF
+
